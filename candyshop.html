@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Grocery Store Management System</h1>
+    <div>
+        <form id="form">
+            <label for="i_name">Item Name:</label>
+            <input type="text" id="item_name">
+            <label for="description">Description:</label>
+            <input type="text" id="description">
+            <label for="price">Price:</label>
+            <input type="price" id="price">
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity">
+            <input type="submit" id="submit" value="Add Item"> 
+        </form>
+        <ul id="itemList"></ul>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
+    <script>
+        let item_name = document.getElementById('item_name');
+        let description = document.getElementById('description');
+        let price=document.getElementById('price');
+        let quantity = document.getElementById('quantity');
+        let ul = document.getElementById('itemList');
+        let submit = document.getElementById('submit');
+
+        function onSubmit(e) {
+            e.preventDefault();
+            let obj = {
+                "item_name": item_name.value,
+                "price":price.value,
+                "description": description.value,
+                "quantity": quantity.value 
+            };
+
+        axios.post(`http://localhost:4000/add-items`, obj)
+        .then((res) => {
+            console.log(res);
+            addToList(obj);
+        })
+        .catch((err) => {
+            document.body.innerHTML += "<h4>Something went wrong</h4>";
+            console.error(err);
+        });
+
+    // Clear input fields after submission
+        item_name.value = '';
+        description.value = '';
+        price.value='';
+        quantity.value = '';
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        axios.get(`http://localhost:4000/get-items`)
+        .then((res) => {
+            for (let i = 0; i < res.data.length; i++) {
+                addToList(res.data[i]);
+            }
+        })
+        .catch((err) => {
+            document.body.innerHTML += "<h4>Something went wrong</h4>";
+            console.error(err);
+        });
+    });
+
+// function onBuy1(e) {
+//     if (e.target.classList.contains('buy1')) {
+//         let li = e.target.parentElement;
+//         let id = li.dataset.id;
+//         axios.get(`https://crudcrud.com/api/54a363dfb5b64ab49455c08e443c6e56/gsms/${id}`)
+//             .then((res) => {
+//                 let data = res.data;
+//                 if (data.quantity > 0) { 
+//                     let newObj = {
+//                         "itemName": data.itemName,
+//                         "description": data.description,
+//                         "quantity": data.quantity - 1
+//                     };
+//                     axios.put(`https://crudcrud.com/api/54a363dfb5b64ab49455c08e443c6e56/gsms/${id}`, newObj)
+//                         .then((res) => {
+//                             ul.removeChild(li);
+//                             console.log(res);
+//                         })
+//                         .catch((err) => {
+//                             console.error(err);
+//                         });
+//                     addToList(newObj, id);
+//                 }else{
+//                     alert("out of stock");
+//                 }
+//             })
+//             .catch((err) => {
+//                 console.error(err);
+//             });
+//     }
+// }
+// function onBuy2(e) {
+//     if (e.target.classList.contains('buy2')) {
+//         let li = e.target.parentElement;
+//         let id = li.dataset.id;
+//         axios.get(`https://crudcrud.com/api/54a363dfb5b64ab49455c08e443c6e56/gsms/${id}`)
+//             .then((res) => {
+//                 let data = res.data;
+//                 if (data.quantity > 2) { // Ensure quantity is greater than 0 before updating
+//                     let newObj = {
+//                         "itemName": data.itemName,
+//                         "description": data.description,
+//                         "quantity": data.quantity - 2
+//                     };
+//                     axios.put(`https://crudcrud.com/api/54a363dfb5b64ab49455c08e443c6e56/gsms/${id}`, newObj)
+//                         .then((res) => {
+//                             ul.removeChild(li);
+//                             console.log(res);
+//                         })
+//                         .catch((err) => {
+//                             console.error(err);
+//                         });
+//                     addToList(newObj, id); // Add the updated item back to the list
+//                 }else{
+//                     alert("out of stock");
+//                 }
+//             })
+//             .catch((err) => {
+//                 console.error(err);
+//             });
+//     }
+// }
+// function onBuy3(e) {
+//     if (e.target.classList.contains('buy3')) {
+//         let li = e.target.parentElement;
+//         let id = li.dataset.id;
+//         axios.get(`https://crudcrud.com/api/54a363dfb5b64ab49455c08e443c6e56/gsms/${id}`)
+//             .then((res) => {
+//                 let data = res.data;
+//                 if (data.quantity > 3) { // Ensure quantity is greater than 0 before updating
+//                     let newObj = {
+//                         "itemName": data.itemName,
+//                         "description": data.description,
+//                         "quantity": data.quantity - 3
+//                     };
+//                     axios.put(`https://crudcrud.com/api/54a363dfb5b64ab49455c08e443c6e56/gsms/${id}`, newObj)
+//                         .then((res) => {
+//                             ul.removeChild(li);
+//                             console.log(res);
+//                         })
+//                         .catch((err) => {
+//                             console.error(err);
+//                         });
+//                     addToList(newObj, id); // Add the updated item back to the list
+//                 }else{
+//                     alert("out of stock");
+//                 }
+//             })
+//             .catch((err) => {
+//                 console.error(err);
+                
+//             });
+//     }
+// }
+
+function addToList(obj) {
+    let li = document.createElement('li');
+    let text = document.createTextNode(`Item name: ${obj.item_name}  Description: ${obj.description}  Price:${obj.price}  Quantity: ${obj.quantity}`);
+
+    let buy1 = document.createElement('input');
+    buy1.type = 'button';
+    buy1.className = 'buy1';
+    buy1.value = 'BUY 1';
+
+    buy1.onclick=()=>{
+        const id=obj.id;
+        const qty=2;
+        if (obj.quantity<1){
+            alert('Out of stock')
+        }else{
+        let obj1={
+            quantity:obj.quantity-1
+        }
+        axios.patch(`http://localhost:4000/edit-items/${id}/${1}`,obj1)
+        .then(res=>{
+            location.reload();
+            console.log(res)
+        }).catch(err=>console.log(err))
+    }
+    }
+
+    let buy2 = document.createElement('input');
+    buy2.type = 'button';
+    buy2.className = 'buy2';
+    buy2.value = 'BUY 2';
+
+    buy2.onclick=()=>{
+        const id=obj.id;
+        const qty=2;
+        if (obj.quantity<2){
+            alert('Out of stock')
+        }else{
+        let obj1={
+            quantity:obj.quantity-2
+        }
+        axios.patch(`http://localhost:4000/edit-items/${id}/${2}`,obj1)
+        .then(res=>{
+            location.reload();
+            console.log(res)
+        }).catch(err=>console.log(err))
+    }
+    }
+
+    let buy3 = document.createElement('input');
+    buy3.type = 'button';
+    buy3.className = 'buy3';
+    buy3.value = 'BUY 3';
+
+    buy3.onclick=()=>{
+        const id=obj.id;
+        const qty=3;
+        if (obj.quantity<3){
+            alert('Out of stock')
+        }else{
+        let obj1={
+            quantity:obj.quantity-3
+        }
+        axios.patch(`http://localhost:4000/edit-items/${id}/${qty}`,obj1)
+        .then(res=>{
+            location.reload();
+            console.log(res)
+        }).catch(err=>console.log(err))
+    }
+    }
+
+    li.appendChild(text);
+    li.appendChild(buy1);
+    li.appendChild(buy2);
+    li.appendChild(buy3);
+    ul.appendChild(li);
+}
+
+submit.addEventListener('click', onSubmit);
+
+    </script>
+</body>
+</html>
